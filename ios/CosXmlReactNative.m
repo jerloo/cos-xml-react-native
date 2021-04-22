@@ -209,22 +209,27 @@ RCT_EXPORT_METHOD(headObject:(NSDictionary*) options resolve:(RCTPromiseResolveB
 }
 
 - (void) initService:(NSDictionary*)config {
-    QCloudServiceConfiguration* configuration = [[QCloudServiceConfiguration alloc] init];
-    configuration.signatureProvider = self;
+    @try{
+        QCloudServiceConfiguration* configuration = [[QCloudServiceConfiguration alloc] init];
+        configuration.signatureProvider = self;
 
-    QCloudCOSXMLEndPoint* endpoint = [[QCloudCOSXMLEndPoint alloc] init];
-    endpoint.regionName = [RCTConvert NSString:[config objectForKey:@"region"]];
-    endpoint.useHTTPS = YES;
-    configuration.endpoint = endpoint;
+        QCloudCOSXMLEndPoint* endpoint = [[QCloudCOSXMLEndPoint alloc] init];
+        endpoint.regionName = [RCTConvert NSString:[config objectForKey:@"region"]];
+        endpoint.useHTTPS = YES;
+        configuration.endpoint = endpoint;
 
-    [QCloudCOSXMLService registerDefaultCOSXMLWithConfiguration:configuration];
-    [QCloudCOSTransferMangerService registerDefaultCOSTransferMangerWithConfiguration:configuration];
+        [QCloudCOSXMLService registerDefaultCOSXMLWithConfiguration:configuration];
+        [QCloudCOSTransferMangerService registerDefaultCOSTransferMangerWithConfiguration:configuration];
 
-    self.credentialFenceQueue = [QCloudCredentailFenceQueue new];
-    self.credentialFenceQueue.delegate = self;
-    
-    requests = [NSMutableDictionary new];
-    resumeDataList = [NSMutableDictionary new];
+        self.credentialFenceQueue = [QCloudCredentailFenceQueue new];
+        self.credentialFenceQueue.delegate = self;
+        
+        requests = [NSMutableDictionary new];
+        resumeDataList = [NSMutableDictionary new];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"%@", exception.reason);
+    }
 }
 
 -(void)sendMessageToRN:(NSDictionary*)info toChannel:(NSString*)channel {
